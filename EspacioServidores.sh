@@ -1,5 +1,7 @@
- for node in $(oc get nodes| grep ocp | cut -d " " -f 1); do echo $node ; ssh $node df -h /var/lib/docker; done    > /respaldo-openshift/AlarmasCluster/EspacioServidores.txt
-mail -s "Informacion de espacio en los Servidores" -S smtp=192.168.35.61:25 -r openshift_desa@claro.com.ec -a   /respaldo-openshift/AlarmasCluster/EspacioServidores.txt  "jbrionev@claro.com.ec,btamayog@claro.com.ec,jlarrosa@claro.com.ec"<<< 'Se adjunta la informacion del espacio utilizado por el directorio usado por los Pods en los servidores.
+source .env
+
+for node in $(oc get nodes| grep ocp | cut -d " " -f 1); do echo $node ; ssh $node df -h /var/lib/docker; done    > /tmp/EspacioServidores.txt
+mail -s "Informacion de espacio en los Servidores" -S smtp=$SMTP_ADDRESS:$SMTP_PORT -r $FROM_ADDRESS -a   /tmp/EspacioServidores.txt  "$DEST_ADDRESS"<<< 'Se adjunta la informacion del espacio utilizado por el directorio usado por los Pods en los servidores.
 Solicitar una limpieza de imagenes en el nodo afectado al area de Infraestructura.
 
 Referencia:

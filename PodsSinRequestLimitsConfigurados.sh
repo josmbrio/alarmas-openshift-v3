@@ -1,11 +1,12 @@
-oc describe nodes | grep "0 (0%)" | egrep -v '(^  openshift|^  kube|^  app-storage|^  default|^  cpu|^  memory|\-deploy )'  > /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt
+source .env
+oc describe nodes | grep "0 (0%)" | egrep -v '(^  openshift|^  kube|^  app-storage|^  default|^  cpu|^  memory|\-deploy )'  > /tmp/PodsSinRequestLimits.txt
 
-if [ -s /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt ]
+if [ -s /tmp/PodsSinRequestLimits.txt ]
 then
-echo "  Namespace                     Pod Name                              CPU Requests  CPU Limits  Memory Requests  Memory Limits" >  /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt
-echo "  ---------                     --------                              ------------  ----------  ---------------  -------------" >> /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt
- oc describe nodes | grep "0 (0%)" | egrep -v '(^  openshift|^  kube|^  app-storage|^  default|^  cpu|^  memory|\-deploy )'  >> /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt
- mail -s "Informacion Pods sin Request/Limits" -S smtp=192.168.35.61:25 -r openshift_desa@claro.com.ec -a /respaldo-openshift/AlarmasCluster/PodsSinRequestLimits.txt  "jbrionev@claro.com.ec,btamayog@claro.com.ec,jlarrosa@claro.com.ec"<<< "En la informacion adjunta se presentan los Pods cuyo DC no tiene configurado Request y/o Limits.
+echo "  Namespace                     Pod Name                              CPU Requests  CPU Limits  Memory Requests  Memory Limits" >  /tmp/PodsSinRequestLimits.txt
+echo "  ---------                     --------                              ------------  ----------  ---------------  -------------" >> /tmp/PodsSinRequestLimits.txt
+ oc describe nodes | grep "0 (0%)" | egrep -v '(^  openshift|^  kube|^  app-storage|^  default|^  cpu|^  memory|\-deploy )'  >> /tmp/PodsSinRequestLimits.txt
+ mail -s "Informacion Pods sin Request/Limits" -S smtp=$SMTP_ADDRESS:$SMTP_PORT -r $FROM_ADDRESS -a /tmp/PodsSinRequestLimits.txt  "$DEST_ADDRESS"<<< "En la informacion adjunta se presentan los Pods cuyo DC no tiene configurado Request y/o Limits.
 Es necesario realizar esta configuracion para un mejor manejo de los recursos de la plataforma."
 
 else 
